@@ -6,7 +6,6 @@ dotenv.config();
 
 let sslConfig = null;
 
-// ✅ Check if Render provides SSL or a certificate path
 if (process.env.DB_SSL_CERT) {
   try {
     sslConfig = {
@@ -17,7 +16,6 @@ if (process.env.DB_SSL_CERT) {
     sslConfig = { rejectUnauthorized: false };
   }
 } else if (process.env.RENDER === "true") {
-  // ✅ If running on Render but no cert file, still enable SSL without strict validation
   sslConfig = { rejectUnauthorized: false };
 }
 
@@ -29,13 +27,10 @@ const dbConfig = {
   ssl: sslConfig,
 };
 
-export const connectDB = async () => {
-  try {
-    const connection = await mysql.createConnection(dbConfig);
-    console.log("✅ Connected to Aiven MySQL successfully!");
-    return connection;
-  } catch (err) {
-    console.error("❌ Error connecting to Aiven MySQL:", err.message);
-    process.exit(1);
-  }
-};
+// ✅ Create a default connection immediately
+const db = await mysql.createConnection(dbConfig);
+
+console.log("✅ Connected to Aiven MySQL successfully!");
+
+// ✅ Export as default for backward compatibility
+export default db;
