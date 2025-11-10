@@ -1,10 +1,8 @@
 import mysql from 'mysql2';
 import dotenv from 'dotenv';
-import fs from "fs";
-import path from "path";
+import fs from 'fs';
 
 dotenv.config();
-// const CA_CERT_PATH = path.join(process.cwd(),process.env.CERT_PATH);
 
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
@@ -17,13 +15,13 @@ const pool = mysql.createPool({
     queueLimit: 0,
     ssl: {
         rejectUnauthorized: true,
-        ca: process.env.CA_CERT
+        ca: fs.readFileSync(process.env.CA_CERT_PATH) // <-- read from file
     }
 });
 
 pool.getConnection((err, connection) => {
     if (err) {
-        console.error('❌ Error connecting to Aiven MySQL:', err.code);
+        console.error('❌ Error connecting to Aiven MySQL:', err.code, err);
     } else {
         console.log('✅ Successfully connected to Aiven MySQL service.');
         connection.release();
